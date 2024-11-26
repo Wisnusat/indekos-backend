@@ -47,7 +47,7 @@ func ConnectDB() *sql.DB {
 		log.Fatal("Failed to connect to the database: ", err)
 	}
 
-	// Ping the database
+	// Ping  database
 	err = db.Ping()
 	if err != nil {
 		log.Fatal("Database is not accessible: ", err)
