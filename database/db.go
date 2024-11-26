@@ -41,7 +41,6 @@ func ConnectDB() *sql.DB {
 		user, password, host, port, database,
 	)
 
-	// Connect to the database
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("Failed to connect to the database: ", err)
