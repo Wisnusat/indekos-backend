@@ -164,24 +164,33 @@ func UpdateKos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var kos models.Kos
-	err := json.NewDecoder(r.Body).Decode(&kos)
+	vars := mux.Vars(r)
+	idKos, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Invalid kos ID", http.StatusBadRequest)
+		log.Printf("Invalid kos ID: %v\n", err)
 		return
 	}
 
-	if kos.IDKos == 0 || kos.IDPemilik == 0 || kos.NamaKos == "" || kos.AlamatKos == "" || kos.HargaSewa == 0 {
-		http.Error(w, "IDKos, IDPemilik, NamaKos, AlamatKos, dan HargaSewa diperlukan", http.StatusBadRequest)
+	var kos models.Kos
+	err = json.NewDecoder(r.Body).Decode(&kos)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		log.Printf("Invalid request body: %v\n", err)
+		return
+	}
+
+	if kos.IDPemilik == 0 || kos.NamaKos == "" || kos.AlamatKos == "" || kos.HargaSewa == 0 {
+		http.Error(w, "IDPemilik, NamaKos, AlamatKos, dan HargaSewa diperlukan", http.StatusBadRequest)
 		return
 	}
 
 	db := database.ConnectDB()
 	defer db.Close()
 
-	query := `UPDATE kos SET id_pemilik = ?, nama_kos = ?, alamat_kos = ?, harga_sewa = ?, deskripsi = ?, fasilitas = ?, status_kos = ? WHERE id_kos = ?`
+	query := `UPDATE kos SET id_pemilik = ?, nama_kos = ?, alamat_kos = ?, harga_sewa = ?, deskripsi_kos = ?, fasilitas = ?, status_kos = ? WHERE id_kos = ?`
 
-	_, err = db.Exec(query, kos.IDPemilik, kos.NamaKos, kos.AlamatKos, kos.HargaSewa, kos.Deskripsi, kos.Fasilitas, kos.StatusKos, kos.IDKos)
+	_, err = db.Exec(query, kos.IDPemilik, kos.NamaKos, kos.AlamatKos, kos.HargaSewa, kos.Deskripsi, kos.Fasilitas, kos.StatusKos, idKos)
 	if err != nil {
 		http.Error(w, "Gagal memperbarui data kos", http.StatusInternalServerError)
 		log.Printf("Kesalahan memperbarui data kos: %v\n", err)
