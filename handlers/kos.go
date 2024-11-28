@@ -110,7 +110,7 @@ func TambahKos(w http.ResponseWriter, r *http.Request) {
 	db := database.ConnectDB()
 	defer db.Close()
 
-	query := `INSERT INTO kos (id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi, fasilitas, status_kos)
+	query := `INSERT INTO kos (id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi_kos, fasilitas, status_kos)
               VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	_, err = db.Exec(query, kos.IDPemilik, kos.NamaKos, kos.AlamatKos, kos.HargaSewa, kos.Deskripsi, kos.Fasilitas, kos.StatusKos)
@@ -132,10 +132,11 @@ func HapusKos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vars := r.URL.Query()
-	idKos, err := strconv.Atoi(vars.Get("id"))
+	vars := mux.Vars(r)
+	idKos, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, "Invalid kos ID", http.StatusBadRequest)
+		log.Printf("Invalid kos ID: %v\n", err)
 		return
 	}
 
@@ -143,7 +144,6 @@ func HapusKos(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	query := `DELETE FROM kos WHERE id_kos = ?`
-
 	_, err = db.Exec(query, idKos)
 	if err != nil {
 		http.Error(w, "Gagal menghapus data kos", http.StatusInternalServerError)
@@ -151,6 +151,7 @@ func HapusKos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Berhasil menghapus data
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Data kos berhasil dihapus",
