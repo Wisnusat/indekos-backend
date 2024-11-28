@@ -33,19 +33,19 @@ func main() {
 	r := mux.NewRouter()
 
 	// user
-	r.HandleFunc("/login-pemilik-kos", handlers.LoginPemilik).Methods("POST")
-	r.HandleFunc("/login-penyewa", handlers.LoginPenyewa).Methods("POST")
-	r.HandleFunc("/register", handlers.RegisterHandler).Methods("POST")
-	r.HandleFunc("/logout", handlers.Logout).Methods("POST")
-	r.HandleFunc("/profile-penyewa/{id}", handlers.GetProfilePenyewa).Methods("GET")
-	r.HandleFunc("/profile-pemilik-kos/{id}", handlers.GetProfilePemilikKos).Methods("GET")
+	r.HandleFunc("/login-pemilik-kos", handlers.LoginPemilik).Methods("POST")               // ok
+	r.HandleFunc("/login-penyewa", handlers.LoginPenyewa).Methods("POST")                   // ok
+	r.HandleFunc("/register", handlers.RegisterHandler).Methods("POST")                     // ok
+	r.HandleFunc("/logout", handlers.Logout).Methods("POST")                                // ok
+	r.HandleFunc("/profile-penyewa/{id}", handlers.GetProfilePenyewa).Methods("GET")        // ok
+	r.HandleFunc("/profile-pemilik-kos/{id}", handlers.GetProfilePemilikKos).Methods("GET") //ok
 
 	// kos
-	r.HandleFunc("/kos", handlers.GetKosList).Methods("GET")
-	r.HandleFunc("/kos/{id}", handlers.GetKosID).Methods("GET")
-	r.HandleFunc("/kos", handlers.TambahKos).Methods("POST")
-	r.HandleFunc("/kos/{id}", handlers.UpdateKos).Methods("PUT")
-	r.HandleFunc("/kos/{id}", handlers.HapusKos).Methods("DELETE")
+	r.HandleFunc("/kos", handlers.GetKosList).Methods("GET")       // ok
+	r.HandleFunc("/kos/{id}", handlers.GetKosID).Methods("GET")    //ok
+	r.HandleFunc("/kos", handlers.TambahKos).Methods("POST")       //ok
+	r.HandleFunc("/kos/{id}", handlers.UpdateKos).Methods("PUT")   //ok
+	r.HandleFunc("/kos/{id}", handlers.HapusKos).Methods("DELETE") // ok
 
 	r.HandleFunc("/reservasi", controllers.TambahReservasi).Methods("POST")
 	r.HandleFunc("/reservasi/approve", controllers.ApproveReservasi).Methods("PUT")
