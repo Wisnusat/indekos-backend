@@ -42,6 +42,7 @@ func main() {
 
 	// kos
 	r.HandleFunc("/kos", handlers.GetKosList).Methods("GET")
+	r.HandleFunc("/kos/{id}", handlers.GetKosID).Methods("GET")
 	r.HandleFunc("/kos", handlers.TambahKos).Methods("POST")
 	r.HandleFunc("/kos/{id}", handlers.UpdateKos).Methods("PUT")
 	r.HandleFunc("/kos/{id}", handlers.HapusKos).Methods("DELETE")

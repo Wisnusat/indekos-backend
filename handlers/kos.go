@@ -3,10 +3,13 @@ package handlers
 import (
 	"backend/database"
 	"backend/models"
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func GetKosList(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +44,49 @@ func GetKosList(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(kosList)
+}
+
+func GetKosID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idKos := vars["id"]
+
+	id, err := strconv.Atoi(idKos)
+	if err != nil {
+		http.Error(w, "Invalid kos ID", http.StatusBadRequest)
+		log.Printf("Invalid kos ID: %v\n", err)
+		return
+	}
+
+	db := database.ConnectDB()
+	defer db.Close()
+
+	var kos models.Kos
+	err = db.QueryRow(`
+		SELECT id_kos, id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi_kos, fasilitas, status_kos 
+		FROM kos 
+		WHERE id_kos = ?`, id).Scan(
+		&kos.IDKos,
+		&kos.IDPemilik,
+		&kos.NamaKos,
+		&kos.AlamatKos,
+		&kos.HargaSewa,
+		&kos.Deskripsi,
+		&kos.Fasilitas,
+		&kos.StatusKos,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Kos not found", http.StatusNotFound)
+			log.Printf("Kos not found: ID %d\n", id)
+		} else {
+			http.Error(w, "Failed to fetch kos data", http.StatusInternalServerError)
+			log.Printf("Error fetching kos data: %v\n", err)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(kos)
 }
 
 func TambahKos(w http.ResponseWriter, r *http.Request) {
