@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func TambahReservasi(w http.ResponseWriter, r *http.Request) {
@@ -136,6 +138,42 @@ func UpdateReservasi(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Data reservasi berhasil diperbarui",
 	})
+}
+
+func GetReservasiListById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idReservasi, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid reservasi ID", http.StatusBadRequest)
+		return
+	}
+
+	db := database.ConnectDB()
+	defer db.Close()
+
+	var reservasi models.Reservasi
+	query := `SELECT id_reservasi, id_penyewa, id_kos, tanggal_reservasi, status_reservasi 
+              FROM reservasi WHERE id_reservasi = ?`
+
+	err = db.QueryRow(query, idReservasi).Scan(
+		&reservasi.IDReservasi,
+		&reservasi.IDPenyewa,
+		&reservasi.IDKos,
+		&reservasi.TanggalReservasi,
+		&reservasi.StatusReservasi,
+	)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Reservasi not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error fetching reservasi", http.StatusInternalServerError)
+			log.Printf("Error fetching reservasi by ID: %v\n", err)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reservasi)
 }
 
 func HapusReservasi(w http.ResponseWriter, r *http.Request) {
