@@ -53,6 +53,8 @@ func main() {
 	// reservasi
 	r.HandleFunc("/reservasi", handlers.TambahReservasi).Methods("POST")
 	r.HandleFunc("/reservasi", handlers.GetReservasiList).Methods("GET")
+	r.HandleFunc("/reservasi/{id}", handlers.GetReservasiListById).Methods("GET")
+
 	r.HandleFunc("/reservasi/{id}", handlers.UpdateReservasi).Methods("PUT")
 	r.HandleFunc("/reservasi/{id}", handlers.HapusReservasi).Methods("DELETE")
 
