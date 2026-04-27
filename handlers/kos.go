@@ -16,7 +16,7 @@ func GetKosList(w http.ResponseWriter, r *http.Request) {
 	db := database.ConnectDB()
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id_kos, id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi_kos, fasilitas, status_kos FROM kos")
+	rows, err := db.Query("SELECT id_kos, id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi, fasilitas, status_kos FROM kos")
 	if err != nil {
 		http.Error(w, "Failed to fetch kos data", http.StatusInternalServerError)
 		log.Printf("Error fetching kos data: %v\n", err)
@@ -62,7 +62,7 @@ func GetKosID(w http.ResponseWriter, r *http.Request) {
 
 	var kos models.Kos
 	err = db.QueryRow(`
-		SELECT id_kos, id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi_kos, fasilitas, status_kos 
+		SELECT id_kos, id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi, fasilitas, status_kos 
 		FROM kos 
 		WHERE id_kos = ?`, id).Scan(
 		&kos.IDKos,
@@ -110,7 +110,7 @@ func TambahKos(w http.ResponseWriter, r *http.Request) {
 	db := database.ConnectDB()
 	defer db.Close()
 
-	query := `INSERT INTO kos (id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi_kos, fasilitas, status_kos)
+	query := `INSERT INTO kos (id_pemilik, nama_kos, alamat_kos, harga_sewa, deskripsi, fasilitas, status_kos)
               VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	_, err = db.Exec(query, kos.IDPemilik, kos.NamaKos, kos.AlamatKos, kos.HargaSewa, kos.Deskripsi, kos.Fasilitas, kos.StatusKos)
@@ -187,7 +187,7 @@ func UpdateKos(w http.ResponseWriter, r *http.Request) {
 	db := database.ConnectDB()
 	defer db.Close()
 
-	query := `UPDATE kos SET id_pemilik = ?, nama_kos = ?, alamat_kos = ?, harga_sewa = ?, deskripsi_kos = ?, fasilitas = ?, status_kos = ? WHERE id_kos = ?`
+	query := `UPDATE kos SET id_pemilik = ?, nama_kos = ?, alamat_kos = ?, harga_sewa = ?, deskripsi = ?, fasilitas = ?, status_kos = ? WHERE id_kos = ?`
 
 	_, err = db.Exec(query, kos.IDPemilik, kos.NamaKos, kos.AlamatKos, kos.HargaSewa, kos.Deskripsi, kos.Fasilitas, kos.StatusKos, idKos)
 	if err != nil {
